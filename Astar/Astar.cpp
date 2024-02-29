@@ -38,7 +38,7 @@ public:
 
         // 移動方向: 上下左右と斜め
         const vector<pair<int, int>> directions = {
-            {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+            {-1, 0}, {1, 0}, {0, -1}, {0, 1}
         };
 
         // オープンリストとクローズドリスト
@@ -47,7 +47,7 @@ public:
         vector<vector<Node>> cameFrom(rows, vector<Node>(cols, Node(-1, -1, -1, -1)));
 
         // スタートノードをオープンリストに追加
-        openList.push(Node(start.first, start.second, 0, 0));
+        openList.push(Node(start.first, start.second, 0, calculateH(start, goal)));
 
         while (!openList.empty()) {
             // オープンリストから最小評価ノードを取り出す
@@ -80,7 +80,7 @@ public:
 
                     // すでにオープンリストに含まれている場合、より小さいg値で更新
                     if (grid[nextX][nextY] == 0 || g < current.g) {
-                        openList.push(Node(nextX, nextY, g, static_cast<int>(sqrt(pow(nextX - goal.first, 2) + pow(nextY - goal.second, 2)))));
+                        openList.push(Node(nextX, nextY, g, calculateH({ nextX, nextY }, goal)));
                         cameFrom[nextX][nextY] = current;  // 現在のノードを親として記録
                     }
                 }
@@ -93,6 +93,11 @@ public:
 
 private:
     vector<vector<int>> grid;  // 迷路の情報
+
+    // マンハッタン距離を計算する関数
+    int calculateH(pair<int, int> current, pair<int, int> goal) {
+        return abs(current.first - goal.first) + abs(current.second - goal.second);
+    }
 };
 
 // 迷路を表示する関数
@@ -116,10 +121,10 @@ int main() {
         // 迷路データ
         {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
         {0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0},
-        {1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+        {0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
         {0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0},
         {0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0},
         {0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0},
